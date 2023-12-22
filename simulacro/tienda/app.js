@@ -45,7 +45,7 @@ app.use('/', indexRouter);
 app.use('/login', loginRouter);
 app.use('/restricted', restrict, restrictedRouter);
 app.use('/register', registerRouter);
-app.use('/chat', chatRouter);
+app.use('/chat', restrict, chatRouter);
 app.use('/logout', function(req, res, next){
   req.session.destroy(function(){
     res.redirect("/");

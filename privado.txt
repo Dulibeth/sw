@@ -1,0 +1,35 @@
+// Cuando un usuario se conecta al chat
+io.on('connection', (socket) => {
+  console.log('a user connected');
+
+  // Manejar el evento 'chat' (para mensajes privados)
+  socket.on('privateChat', ({ receiverId, message }) => {
+    // Enviar el mensaje solo al receptor
+    socket.to(receiverId).emit('privateMessage', { senderId: socket.id, message });
+  });
+
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+  });
+});
+
+// Cuando el formulario de chat se envía desde el frontend
+form.addEventListener('submit', function(e){
+  e.preventDefault();
+  if(input.value){
+    // Reemplaza "receiverId" con el ID único del destinatario
+    socket.emit("privateChat", { receiverId: 'receiverId', message: input.value });
+    input.value = "";
+  }
+});
+
+// Escuchar mensajes privados en el frontend
+socket.on("privateMessage", ({ senderId, message }) => {
+  if (senderId === 'receiverId') { // Comprueba si es el mensaje para este usuario
+    const item = document.createElement("li");
+    item.textContent = message;
+    messages.appendChild(item);
+    window.scrollTo(0, document.body.scrollHeight);
+  }
+});
+
